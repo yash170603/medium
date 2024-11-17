@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import { NextAuthConfig, Session } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import { User } from 'next-auth';
-import { prisma } from '@/app/lib/prisma';
+import { prisma } from '@/lib/prisma';
  
 
 interface customJWT extends JWT {

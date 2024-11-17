@@ -1,18 +1,12 @@
-import { prisma } from "@/app/lib/prisma";
-import { auth } from "../../../../auth";
+import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
 
 export async function POST(request: Request) {
   try {
     const currentSession = await auth();
+    
     console.log(`this is session ${currentSession}`)
-    if (!currentSession) {
-      return Response.json(
-        {
-          message: "Session is missing",
-        },
-        { status: 400 }
-      );
-    }
+    console.log(currentSession)
     const { title, content } = await request.json();
     const authorId = currentSession?.user?.id || "";
     const response = await prisma.post.create({
