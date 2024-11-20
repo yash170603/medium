@@ -13,22 +13,23 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
+ 
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent  } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 
-
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 export default function CreateBlogPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
   const router = useRouter()
+  const queryClient= useQueryClient();
 
   const form = useForm<z.infer<typeof blogSchema>>({
     resolver: zodResolver(blogSchema),
@@ -38,39 +39,63 @@ export default function CreateBlogPage() {
     },
   })
 
-  const onSubmit = async (data: z.infer<typeof blogSchema>) => {
-    try {
-      setIsSubmitting(true)
-      const response = await axios.post("/api/createBlog", data)
-      console.log(`Blog creation response:`, response)
-      toast({
-        title: "Success",
-        description: "Blog was created successfully",
-      })
-      form.reset()
-      router.replace('/home')
-    } catch (error) {
-      console.error(error)
-      toast({
-        title: "Error",
-        description: "Failed to create blog. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
+  // const onSubmit = async (data: z.infer<typeof blogSchema>) => {
+  //   try {
+  //     setIsSubmitting(true)
+  //     const response = await axios.post("/api/createBlog", data)
+  //     console.log(`Blog creation response:`, response)
+  //     toast({
+  //       title: "Success",
+  //       description: "Blog was created successfully",
+  //     })
+  //     form.reset()
+  //     router.replace('/home')
+  //   } catch (error) {
+  //     console.error(error)
+  //     toast({
+  //       title: "Error",
+  //       description: "Failed to create blog. Please try again.",
+  //       variant: "destructive",
+  //     })
+  //   } finally {
+  //     setIsSubmitting(false)
+  //   }
+  // }
+
+
+     const createMutation = useMutation({
+         mutationFn: async (data: z.infer<typeof blogSchema>)=>{
+            const response = await axios.post("/api/createBlog", data);
+            return response.data.response;
+         },onSuccess:()=>{
+            queryClient.invalidateQueries({queryKey:['myBlogs']})
+            toast({
+              title: "Success",
+              description: "Blog was created successfully",
+            })
+         },onError:(error:any)=>{
+            toast({
+              title: "Error",
+              description: "Failed to create blog. Please try again.",
+              variant: "destructive",
+              className: "text-white bg-blue-950 hover:bg-black",
+            })
+         }
+     })
+     const onSubmit = (data:z.infer<typeof blogSchema>)=>{
+             createMutation.mutate(data)
+     }
 
   return (
     <div className="min-h-screen bg-background text-foreground flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 dark bg-gray-900">
-      <Card className="w-full max-w-2xl bg-gray-800 border-gray-700">
+      <Card className=" h-max w-full max-w-2xl bg-gray-800 border-gray-700">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-gray-100">Create a New Blog Post</CardTitle>
           <CardDescription className="text-gray-400">Share your thoughts with the world</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit( onSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
                 name="title"
@@ -84,7 +109,6 @@ export default function CreateBlogPage() {
                         className="bg-gray-700 text-gray-100 border-gray-600 focus:border-primary focus:ring-primary"
                       />
                     </FormControl>
-                    <FormMessage className="text-red-400" />
                   </FormItem>
                 )}
               />
@@ -101,16 +125,15 @@ export default function CreateBlogPage() {
                         className="bg-gray-700 text-gray-100 border-gray-600 focus:border-primary focus:ring-primary min-h-[200px]"
                       />
                     </FormControl>
-                    <FormMessage className="text-red-400" />
                   </FormItem>
                 )}
               />
               <Button 
                 type="submit" 
                 className=" bg-primary bg-blue-600 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded transition-colors duration-200" 
-                disabled={isSubmitting}
+                disabled={createMutation.isPending}
               >
-                {isSubmitting ? (
+                {createMutation.isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Creating...

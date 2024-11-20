@@ -8,6 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import DeleteBlog from "@/components/shared/deleteBlog";
 import Error from "@/app/error/page";
 import { toast } from "@/hooks/use-toast";
+import EditBlogButton from "@/components/shared/editBlog.button";
 
 interface Blog {
   id: string;
@@ -72,7 +73,11 @@ export default function BlogPage() {
         <div className="bg-gray-800 rounded-lg overflow-hidden">
           <div className="bg-gray-700 px-6 py-3 flex justify-between items-center">
             <span className="text-sm text-gray-300">Content</span>
+            <div className="flex gap-2 bg-gray-400 p-2 rounded-md">
+            <EditBlogButton params={{id:blog.id}}/>
             <DeleteBlog params={{ id: blog.id }}></DeleteBlog>
+            </div>
+           
           </div>
           <ScrollArea className="h-[calc(100vh-10rem)] scroll-smooth">
             <pre className="p-6 text-base leading-relaxed whitespace-pre-wrap break-words">

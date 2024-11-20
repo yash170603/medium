@@ -1,16 +1,17 @@
+
 import { prisma } from "@/lib/prisma";
 import { NextRequest } from "next/server";
-import { z } from "zod";
 
 
 
 export async function DELETE(req:NextRequest,{params}:{params:{id:string}}){
       const {id}= await params;  // this shows a warning without await, idky why, but await helps,,
-  
+            // the recieved id  is the blog id
        try {
+        
         const deleteResponse = await  prisma.post.delete({
             where:{
-                id:id
+                id:id  // thhis si the blogId.
             }
         })
          console.log(`this is the deleteapi response`,deleteResponse);

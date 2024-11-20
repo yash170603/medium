@@ -1,13 +1,14 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import axios from "axios";
 import { HoverEffect } from "@/components/ui/card-hover-effect";
 import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
+import { Loader2, PlusCircle } from "lucide-react";
 import Link from "next/link";
 import { Vortex } from "@/components/ui/vortex";
+import { useQuery } from "@tanstack/react-query";
 
 interface Blog {
   id: string;
@@ -17,29 +18,25 @@ interface Blog {
   authorId: string;
 }
 
-export default function UserBlog() {
-  const [myBlogs, setMyBlogs] = useState<Blog[]>([]);
+export default   function UserBlog() {
   const { data: session } = useSession();
   const authorId = session?.user?.id;
 
-  useEffect(() => {
-    const fetchBlogs = async () => {
-      try {
-        const response = await axios.get(`/api/myBlogs?authorId=${authorId}`);
-        setMyBlogs(response.data.response);
-      } catch (error) {
-        console.error("Error fetching blogs:", error);
-      }
-    };
-
-    if (authorId) {
-      fetchBlogs();
-    }
-  }, [authorId]);
+  const { data: myblogs = [], isPending, isError, error } = useQuery({
+    queryKey: ["myBlogs", authorId],
+    queryFn: async () => {
+      const response = await axios.get(`/api/myBlogs?authorId=${authorId}`);
+      return response.data.response;
+    },
+    staleTime: 1000 * 60, // 1 min
+    refetchOnWindowFocus: false,
+    gcTime: 1000 * 60 * 2, // 2 min
+    enabled: !!authorId, // Only run when authorId is available
+  });
 
   return (
-    <div className="min-h-screen  ">
-      <Vortex className="min-h-screen h-full w-full">
+    <div className="min-h-screen h-full w-full">
+      <Vortex className="min-h-screen">
         <div className="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold text-white dark:text-black">
@@ -52,7 +49,31 @@ export default function UserBlog() {
               </Button>
             </Link>
           </div>
-          { (myBlogs == null || myBlogs.length === 0) ? (
+
+          {/* Handle Loading State */}
+          {isPending && (
+            <div className="text-center py-12 flex items-center justify-center">
+              <h2 className="text-2xl font-semibold text-gray-700 dark:text-gray-300">
+                Loading Blogs...
+                <Loader2 className="animate-spin scroll-smooth mx-16"/>
+              </h2>
+            </div>
+          )}
+
+          {/* Handle Error State */}
+          {isError && (
+            <div className="text-center py-12">
+              <h2 className="text-2xl font-semibold text-gray-400 dark:text-black">
+                Error Loading Blogs
+              </h2>
+              <p className="mt-2 text-red-500">
+                {error instanceof Error ? error.message : "Unknown Error"}
+              </p>
+            </div>
+          )}
+
+          {/* Handle Empty State */}
+          {!isPending && !isError && (myblogs == null || myblogs.length === 0) && (
             <div className="text-center py-12">
               <h2 className="text-2xl font-semibold text-gray-700 dark:text-gray-300">
                 No blogs yet
@@ -61,13 +82,16 @@ export default function UserBlog() {
                 Start writing your first blog post!
               </p>
             </div>
-          ) : (
+          )}
+
+          {/* Render Blogs */}
+          {!isPending && !isError && myblogs.length > 0 && (
             <HoverEffect
-              items={myBlogs.map((blog) => ({
+              items={myblogs.map((blog:Blog) => ({
                 title: blog.title,
                 description:
                   blog.content.length > 50
-                    ? blog.content.substring(0, 20) + "..."
+                    ? blog.content.substring(0, 50) + "..."
                     : blog.content,
                 link: `/blog/${blog.id}`,
               }))}

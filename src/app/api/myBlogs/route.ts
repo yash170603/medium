@@ -1,7 +1,6 @@
-import { prisma } from "@/lib/prisma";
-import { auth } from "@/auth";
+import {prisma} from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { authOptions } from '@/auth.config';
+
 
 
 export async function GET(
@@ -16,8 +15,11 @@ export async function GET(
     try {
       const response = await prisma.post.findMany({
         where: {
-          authorId: authorId || undefined  // Handle null case by using undefined
+          authorId: authorId || undefined , // Handle null case by using undefined
         },
+         orderBy:{
+          updatedAt:'desc'
+         }
       });
 
       if (response.length === 0) {

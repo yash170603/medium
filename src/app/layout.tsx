@@ -4,7 +4,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import AuthProvider from "@/context/authProvider";
-
+import QueryclientProvider from "@/lib/queryClientProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -34,8 +34,9 @@ export default function RootLayout({
       > 
       <AuthProvider>
       <Toaster/>
-   
+      <QueryclientProvider>
       {children}
+      </QueryclientProvider>
       </AuthProvider> 
       </body>
     </html>
