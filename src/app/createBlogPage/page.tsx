@@ -13,6 +13,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
  
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
@@ -26,7 +27,7 @@ import { useRouter } from "next/navigation"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 export default function CreateBlogPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false)
+ 
   const { toast } = useToast()
   const router = useRouter()
   const queryClient= useQueryClient();
@@ -73,6 +74,7 @@ export default function CreateBlogPage() {
               title: "Success",
               description: "Blog was created successfully",
             })
+             router.push('/home')
          },onError:(error:any)=>{
             toast({
               title: "Error",
@@ -87,7 +89,7 @@ export default function CreateBlogPage() {
      }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 dark bg-gray-900">
+    <div className=" min-h-screen h-full w-full  fixed inset-0 bg-background text-foreground flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 dark bg-gray-900">
       <Card className=" h-max w-full max-w-2xl bg-gray-800 border-gray-700">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-gray-100">Create a New Blog Post</CardTitle>
@@ -109,6 +111,7 @@ export default function CreateBlogPage() {
                         className="bg-gray-700 text-gray-100 border-gray-600 focus:border-primary focus:ring-primary"
                       />
                     </FormControl>
+                    <FormMessage className="text-white text-ita"/>
                   </FormItem>
                 )}
               />
@@ -125,6 +128,7 @@ export default function CreateBlogPage() {
                         className="bg-gray-700 text-gray-100 border-gray-600 focus:border-primary focus:ring-primary min-h-[200px]"
                       />
                     </FormControl>
+                    <FormMessage className="text-white text-italic"/>
                   </FormItem>
                 )}
               />

@@ -14,7 +14,7 @@ export async function GET( req:NextRequest,{params}:{params:{id:string}}) {
                if( ! blog) return NextResponse.json({message:"Blog not found"},{status:404})
                return NextResponse.json( 
             {
-                blog,
+                blogResponse:blog,
                 message:"Blog fetched successfully"
             },{status:200})
            } catch (error) {

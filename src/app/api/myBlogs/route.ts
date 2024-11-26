@@ -24,13 +24,15 @@ export async function GET(
 
       if (response.length === 0) {
         console.log("No blogs found for this clientId.");
+        console.log(`this is the line 27 at myBlogs api`, response)
         return NextResponse.json({
           message: "No Blogs were found",
+          response:[]
 
         },{status:200});
       }
 
-        console.log(`this is line 32 ${response}`)
+        console.log(`this is line 32 `,response)
       return NextResponse.json(
         {
           message: "Here are your blogs",

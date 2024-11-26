@@ -70,3 +70,42 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+#nprogress .bar {
+  height: 5px !important;
+  border-top: 5px solid #4858a2 !important;
+}
+#nprogress .peg {
+  box-shadow: 0 0 2px #36c642, 0 0 5px #c55252 !important;
+}
+#nprogress .spinner-icon {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Add explicit animation styles */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-30px);
+  }
+}
+
+.bouncing-box {
+  animation: bounce 2s ease-in-out infinite;
+}

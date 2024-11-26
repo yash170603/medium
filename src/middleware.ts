@@ -19,5 +19,5 @@ export default auth((req) => {
 });
 
 export const config = {
-    matcher: ['/', '/sign-in', '/sign-up', '/home'],
+    matcher: ['/', '/sign-in', '/sign-up', '/home','/api/checkAuthor/:path*','/api/createBlog'],
 };

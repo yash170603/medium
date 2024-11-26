@@ -8,12 +8,14 @@ export async function PUT(req: NextRequest){
         const currentSession = await auth()
         console.log(`this is the currentsesion`,currentSession)
 
-         const {postUpdated, newContent }= await req.json(); // new content 
-
+         const {postUpdateId, newTitle, newContent }= await req.json(); // new content 
+             
          //checking if the post even exists or not
          const postCheck = await prisma.post.findUnique({
             where:{
-                id:postUpdated.id
+                id:postUpdateId || ' ',
+                authorId:currentSession?.user?.id || ' '
+                 
             }
          })
          console.log(`checkingPost response`,postCheck)
@@ -25,11 +27,11 @@ export async function PUT(req: NextRequest){
 
          const response = await prisma.post.update({
             where:{
-                id:postUpdated.id,
-                authorId:currentSession?.user?.id
+                id:postUpdateId || ' ',
+                authorId:currentSession?.user?.id || ' '
             },
             data:{
-                title:postUpdated.title,
+                title:newTitle,
                 content:newContent
             }
          })
