@@ -18,7 +18,14 @@ export default function NavBar() {
       >
         <UserBlogs />
         <CreateBlog />
-        {session.data?.user && <Logout />}
+         <div className="gap-2 flex items-center ">
+          <p className="font-bold">Welcome {session.data?.user?.name}!</p>
+          <div>
+          {session.data?.user && <Logout />}
+          </div>
+          
+         </div>
+      
       </nav>
     </div>
   );
